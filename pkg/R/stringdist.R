@@ -98,14 +98,16 @@ This warning can be avoided by explicitly converting the argument(s).
 #'   see \code{\link{stringdist-metrics}}.
 #' @param useBytes Perform byte-wise comparison, see
 #'   \code{\link{stringdist-encoding}}.
-#' @param weight For \code{method='osa'} or \code{'dl'}, the penalty for
-#'   deletion, insertion, substitution and transposition, in that order. When
+#' @param weight For \code{method='osa'},\code{'osa_asym'} or \code{'dl'}, the 
+#'   penalty for deletion, insertion, substitution and transposition, in that order. When
 #'   \code{method='lv'}, the penalty for transposition is ignored. When
 #'   \code{method='jw'}, the weights associated with characters of \code{a},
 #'   characters from \code{b} and the transposition weight, in that order. 
 #'   Weights must be positive and not exceed 1. \code{weight} is ignored
 #'   completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'},
-#'   \code{'Jaccard'}, \code{'lcs'}, or \code{soundex}.
+#'   \code{'Jaccard'}, \code{'lcs'}, or \code{soundex}. When\code{method='affine'} ,
+#'   the weights are gap insertion penalty, gap extension penalty and
+#'   substitution penalty (positive values) in that order.
 #' @param q  Size of the \eqn{q}-gram; must be nonnegative. Only applies to
 #'   \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.
 #' @param p Prefix factor for Jaro-Winkler distance. The valid range for 

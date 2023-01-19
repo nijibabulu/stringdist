@@ -31,7 +31,7 @@
 #' Currently, the following distance metrics are supported by \pkg{stringdist}.
 #' \tabular{ll}{
 #'    \bold{Method name} \tab \bold{Description}\cr
-#'    \code{osa} \tab Optimal string aligment, (restricted Damerau-Levenshtein distance).\cr
+#'    \code{osa}, \code{osa_asym} \tab Optimal string aligment, (restricted Damerau-Levenshtein distance).\cr
 #'    \code{lv} \tab Levenshtein distance (as in R's native \code{\link[utils]{adist}}).\cr
 #'    \code{dl} \tab Full Damerau-Levenshtein distance.\cr
 #'    \code{hamming}  \tab Hamming distance (\code{a} and \code{b} must have same nr of characters).\cr
@@ -40,7 +40,8 @@
 #'    \code{cosine} \tab cosine distance between \eqn{q}-gram profiles \cr
 #'    \code{jaccard} \tab Jaccard distance between \eqn{q}-gram profiles \cr
 #'    \code{jw} \tab Jaro, or Jaro-Winkler distance.\cr
-#'    \code{soundex} \tab Distance based on soundex encoding (see below)
+#'    \code{soundex} \tab Distance based on soundex encoding (see below) \cr
+#'    \code{affine} \tab Use the Needleman-Wunsch-Gotoh algorithm for string matching.
 #' }
 #'
 #'
@@ -63,7 +64,8 @@
 #' The \bold{Optimal String Alignment distance} (\code{method='osa'}) is like the Levenshtein 
 #' distance but also allows transposition of adjacent characters. Here, each 
 #' substring  may be edited only once. (For example, a character cannot be transposed twice
-#' to move it forward in the string). 
+#' to move it forward in the string). \code{'osa_asym'} is identical except 
+#' that it forces matching the smaller to the larger string.
 #'
 #' The \bold{full Damerau-Levenshtein distance} (\code{method='dl'}) is like the optimal 
 #' string alignment distance except that it allows for multiple edits on substrings. 
@@ -128,7 +130,14 @@
 #' the beginning and end of the window, and the 'running cosine' distance uses
 #' this and a few other tricks to save calculations.
 #' 
-#'
+#' The \bold{Needleman-Wunsch-Gotoh} algorithm ("affine") is a string matching 
+#' algorithm designed for the optimal matching of biological sequences. It includes
+#' a gap-extension score which penalizes the number of insertion blocks distinctly 
+#' from the number of extended characters within the insertion block. Namely,
+#' the score is \eqn{m\cdot s + g\cdot b + e\cdot \sum_b |b| }, where \eqn{m}
+#' is the mismatch penalty, \eqn{s} is the number of substitutions, \eqn{g} is the
+#' insertion penalty, \eqn{b} is the number of insertion blocks, \eqn{e} is the 
+#' insertion extension penalty and \eqn{ |b| } is the length of an insertion block.
 #'
 #' @references
 #'
@@ -143,6 +152,13 @@
 #' \item{
 #'  G. Navarro (2001). \emph{A guided tour to approximate string matching}. ACM Computing Surveys \bold{33} 31-88.
 #' }
+#' \item{
+#'   Needleman, Saul B., and Christian D. Wunsch. (1970). \emph{A General Method Applicable to the Search for Similarities in the Amino Acid Sequence of Two Proteins.} Journal of Molecular Biology \bold{48}(3):443–53. doi: 10.1016/0022-2836(70)90057-4.
+#' }
+#' \item{
+#'  Gotoh, Osamu. 1982. \emph{An Improved Algorithm for Matching Biological Sequences.} Journal of Molecular Biology \bold{162}(3):705–8. doi: 10.1016/0022-2836(82)90398-9.
+#' }
+
 #' }
 #' @seealso
 #' \itemize{ 
