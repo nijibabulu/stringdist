@@ -18,13 +18,22 @@
  */
 
 #include "utils.h"
+#include "stringdist.h"
 
 /* Optimal string alignment algorithm. 
  * Computes Damerau-Levenshtein distance, restricted to single transpositions.
  * - See pseudocode at http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
  * - Extended with custom weights and maxDistance
  */
-double osa_dist(unsigned int *a, int na, unsigned int *b, int nb, double *weight, double *scores){
+double osa_dist(unsigned int *a, int na, unsigned int *b, int nb, double *weight, double *scores, unsigned int d){
+
+  unsigned int *tmpp;
+  int tmp;
+
+  if(d == osa_asym && na < nb) {
+    tmp = na; na = nb; nb = tmp;
+    tmpp = a; a = b; b = tmpp;
+  }
 
   if (!na){
     return (double) nb * weight[1]; // ins weight
@@ -66,6 +75,57 @@ for ( i = 1; i <= na; ++i ){
   }
 }
   double score = scores[I*J-1];
+  return score;
+}
+
+double affine_dist(unsigned int *a, int na, unsigned int *b, int nb, double *weight, double *scores,  unsigned int d){
+
+  double *m = scores;
+  double *x = scores + (na+1)*(nb+1);
+  double *y = x + (na+1)*(nb+1);
+
+  if (!na || !nb){
+    return (double) nb * weight[0]; // gap weight
+  }
+
+  int i, j;
+  int M, I = na+1, L=na+1, J = nb+1;
+  double sub;
+
+
+   for ( i = 1; i < I; ++i ){
+      m[i] = x[i] = y[i] = weight[0] + i * weight[1];
+   }
+   for ( j = 1; j < J; ++j, L += I ){
+      m[L] = x[L] = y[L] = weight[0] + j * weight[1];
+   }
+
+  m[0] = x[0] = y[0] = 0;
+
+for ( i = 1; i <= na; ++i ){
+  L = I; M = 0;
+  for ( j = 1; j <= nb; ++j, L += I, M += I ){
+    if (a[i-1] == b[j-1]){ sub = 0; } 
+    else { sub = weight[2]; }
+
+    x[i + L] = MIN(
+        x[i-1 + L] + weight[1], 
+        m[i-1 + L] + weight[0] + weight[1]);
+    y[i + L] = MIN(
+        y[i   + M] + weight[1], 
+        m[i   + M] + weight[0] + weight[1]);
+    m[i + L] = MIN(MIN( 
+      x[i   + L],
+      y[i   + L]),    
+      m[i-1 + M] + sub 
+    );
+    /*if(i == j) {
+      fprintf(stderr, "%d %f %d %d, %f\n",i-1 + M, sub, i, j, m[i-1 + M]);
+    }*/
+  }
+}
+  double score = MIN(MIN(x[I*J-1], y[I*J-1]), m[I*J-1]);
+  /*fprintf(stderr, "%f %f %f", x[I*J-1], y[I*J-1], m[I*J-1]);*/
   return score;
 }
 

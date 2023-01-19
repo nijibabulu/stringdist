@@ -135,7 +135,7 @@ This warning can be avoided by explicitly converting the argument(s).
 #' @example ../examples/stringdist.R
 #' @export
 stringdist <- function(a, b
-  , method=c("osa","lv","dl","hamming","lcs", "qgram","cosine","jaccard","jw","soundex")
+  , method=c("osa","lv","dl","hamming","lcs", "qgram","cosine","jaccard","jw","soundex","osa_asym","affine")
   , useBytes = FALSE
   , weight=c(d=1,i=1,s=1,t=1) 
   , q  = 1
@@ -154,7 +154,7 @@ stringdist <- function(a, b
     , p <= 0.25
     , p >= 0
     , is.logical(useBytes)
-    , ifelse(method %in% c('osa','dl'), length(weight) >= 4, TRUE)
+    , ifelse(method %in% c('osa','osa_asym','dl'), length(weight) >= 4, TRUE)
     , ifelse(method %in% c('lv','jw') , length(weight) >= 3, TRUE)
     , nthread > 0
   )
@@ -194,7 +194,7 @@ stringdist <- function(a, b
 #' @rdname stringdist
 #' @export
 stringdistmatrix <- function(a, b
-  , method=c("osa","lv","dl","hamming","lcs","qgram","cosine","jaccard","jw","soundex")
+  , method=c("osa","lv","dl","hamming","lcs","qgram","cosine","jaccard","jw","soundex","osa_asym","affine")
   , useBytes = FALSE
   , weight=c(d=1,i=1,s=1,t=1)  
   , q  = 1
@@ -222,7 +222,7 @@ stringdistmatrix <- function(a, b
     , p <= 0.25
     , p >= 0
     , is.logical(useBytes)
-    , ifelse(method %in% c('osa','dl'), length(weight) >= 4, TRUE)
+    , ifelse(method %in% c('osa','osa_asym','dl'), length(weight) >= 4, TRUE)
     , ifelse(method %in% c('lv','jw') , length(weight) >= 3, TRUE)
     , nthread > 0
   )
@@ -305,6 +305,8 @@ METHODS <- c(
   , jw      = 8L
   , soundex = 9L
   , running_cosine = 10L
+  , osa_asym = 11L
+  , affine = 12L
 )
 
 
@@ -329,7 +331,7 @@ do_dist <- function(a, b, method, weight, q, p, bt, useBytes=FALSE, nthread=1L){
 
 # more efficient function that returns a square distance matrix as a 'stats::dist' object.
 lower_tri <- function(a
-  , method=c("osa","lv","dl","hamming","lcs","qgram","cosine","jaccard","jw","soundex")
+  , method=c("osa","lv","dl","hamming","lcs","qgram","cosine","jaccard","jw","soundex","osa_asym","affine")
   , useBytes = FALSE
   , weight=c(d=1,i=1,s=1,t=1)
   , q=1

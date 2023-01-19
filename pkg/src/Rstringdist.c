@@ -33,7 +33,7 @@
 static Stringdist *R_open_stringdist(Distance d, int max_len_a, int max_len_b, SEXP weight, SEXP p, SEXP bt, SEXP q){
 
   Stringdist *sd = NULL;
-  if (d == osa || d == lv || d == dl || d == hamming || d == lcs){
+  if (d == osa || d == osa_asym || d == affine || d == lv || d == dl || d == hamming || d == lcs){
     sd = open_stringdist(d, max_len_a, max_len_b, REAL(weight));
   } else if (d == qgram || d == cosine || d == jaccard || d == running_cosine){
     sd = open_stringdist(d, max_len_a, max_len_b, (unsigned int) INTEGER(q)[0]);

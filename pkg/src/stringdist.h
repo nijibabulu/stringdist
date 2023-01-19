@@ -37,7 +37,9 @@ typedef enum Distance {
   , jaccard
   , jw
   , soundex
-  , running_cosine} Distance;
+  , running_cosine
+  , osa_asym
+  , affine} Distance;
 
 typedef struct {
   Distance distance;

@@ -41,11 +41,18 @@ Stringdist *open_stringdist(Distance d, int str_len_a, int str_len_b, ...){
   Stringdist *S = (Stringdist *) malloc(sizeof(Stringdist)); 
   (*S) = (Stringdist) {d, NULL, NULL, NULL, NULL, 0L, 0.0, 0.0, 0L};
   switch (d){
-    case osa :
+    case osa_asym : case osa :
       S->work = (double *) malloc( (str_len_a + 1) * (str_len_b + 1) * sizeof(double)); 
       S->weight = (double *) malloc(4*sizeof(double));
       memcpy(S->weight, va_arg(args, double *), 4*sizeof(double));
       break;
+
+    case affine :
+      S->work = (double *) malloc( 3 * (str_len_a + 1) * (str_len_b + 1) * sizeof(double)); 
+      S->weight = (double *) malloc(4*sizeof(double));
+      memcpy(S->weight, va_arg(args, double *), 4*sizeof(double));
+      break;
+
     case lv :
       S->work = (double *) malloc( (str_len_a + 1) * (str_len_b + 1) *sizeof(double));
       S->weight = (double *) malloc(3 * sizeof(double));
@@ -110,14 +117,14 @@ void close_stringdist(Stringdist *S){
     free_dictionary(S->dict);
   }
   if (S->distance == qgram || S->distance == cosine || S->distance == jaccard){
-    free_qtree();
+    free_qtree(S->tree);
   }
   free(S);
 }
 
 void reset_stringdist(Stringdist *S){
   if (S->distance == running_cosine){
-      free_qtree();
+      free_qtree(S->tree);
       S->tree = new_qtree(S->q, 2L);
   }
 }
@@ -130,8 +137,10 @@ double stringdist(Stringdist *S, unsigned int *str_a, int len_a, unsigned int *s
   double d = -1.0;
 
   switch(S->distance){
-    case osa :
-     return osa_dist(str_a, len_a, str_b, len_b, S->weight, S->work);
+    case osa_asym : case osa :
+     return osa_dist(str_a, len_a, str_b, len_b, S->weight, S->work, S->distance);
+    case affine :
+     return affine_dist(str_a, len_a, str_b, len_b, S->weight, S->work, S->distance);// ((double *)S->work + (len_a+1)*(len_b+1)*sizeof(double)), S->distance);
     case lv :
       return lv_dist( str_a, len_a, str_b, len_b, S->weight, S->work);
     case dl :
